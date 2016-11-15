@@ -1,0 +1,63 @@
+---
+title: "Practica 1"
+author: "Hugo Fernandez"
+date: "5 de noviembre de 2016"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Práctica Variable Aleatoria unidimensional
+
+Una empresa de servicios de Internet quiere hacer una campaña para aplicar entre un 5% y un 25% de descuento a sus clientes de forma aleatoria y lineal, y entonces la probabilidad de que un cliente reciba un determinado descuento se puede modelizar mediante la siguiente función de densidad:
+
+Responde a las siguientes cuestiones:
+
+1. Calcula k para que f (x) sea realmente una funcion de densidad
+```{r pregunta 1 valor k, echo=TRUE}
+  k=1/integrate(function(x) 25-x,5,25)$value
+  den=integrate(function(x) (25-x),5,25)# returns the density data
+  curve(k*(25-x), 5, 25, axes = TRUE, ylab = "f(x)", xlab = "x")
+  axis(1, pos=0, labels = NA)
+  head(k)
+```
+
+2. Calcula la probabilidad de que un cliente obtenga mas de un 20% de descuento
+```{r pregunta 2 probabilidad de que obtenga mas de un 20% de descuento}
+integrate(function(x) k*(25-x),20,25)$value
+```
+
+
+3. ¿Cuál es el descuento medio que se espera aplicar?
+```{r pregunta 3 decuento medio espera aplicar}
+media=integrate(function(x) k*x*(25 - x), 5, 25)$value
+head(media)
+```
+
+4. Calcula la varianza de la variable aleatoria
+```{r pregunta 4 Calcula la varianza de la variable aleatoria}
+ esperanza = integrate(function(x) k*x*(25 - x), 5, 25)$value
+varianza=integrate(function(x) k*(x-esperanza)^2*(25 - x), 5, 25)$value
+head(varianza)
+```
+5. ¿Entre qué valores estarán probablemente la mitad de los descuentos realizados?
+```{r ejercicio 5 Entre qué valores estarán probablemente la mitad de los descuentos realizados}
+
+```
+6. ¿Cuál es la moda de la variable aleatoria?
+```{r ejercicio 6 Cuál es la moda de la variable aleatoria}
+f=function(x) k*(25-x)
+maximo=1
+f1=integrate(f, 5, 25)
+
+f(1)
+```
+7. Calcula la mediana de la variable aleatoria
+```{r ejercicio 7 Calcula la mediana de la variable aleatoria}
+(integrate(function(x)(25 - x)/200, 5, 25)$value)*0.5 
+
+```
