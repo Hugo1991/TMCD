@@ -1,0 +1,103 @@
+---
+title: "Practica 2 - Modelos de distribución de probabilidad"
+author: "Hugo Fernandez"
+date: "16 de noviembre de 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Introduccion
+El conjunto de datos BATTERY incluido en el paquete PASWR2 contiene 100 observaciones de 2 variables correspondientes a la duración de dos tipos de baterías A y B (en horas). El conjunto de datos es un data.frame con las columnas lifetime y facility. Para realizar esta práctica, carga primero el conjunto de datos en tu espacio de trabajo, por ejemplo:
+```{r intro, echo=FALSE}
+library(PASWR2)
+datos <- BATTERY
+```
+Fíjate que tienes que tener instalado el paquete PASWR2 para poder acceder a este conjunto de datos.
+La variable de interés es lifetime, pero como sabemos que los datos se refieren a dos tipos distintos de baterías, posiblemente nos interese separarlos. En esta práctica vamos a realizar cálculo de probabilidades basados en este conjunto de datos para que se vea una aplicación, aunque tengamos que hacer uso de algún concepto de inferencia.
+
+## Actividad 1
+Realiza un histograma de todas las filas de la variable lifetime y comprueba que efectivamente nos interesa separar los datos.
+```{r 1.1,echo=TRUE}
+hist(datos$lifetime, col=4, nclass = 100, main='histograma del ciclo de vida de las baterias', ylab='Frecuencias', xlab='tiempo de vida (H)')
+```
+
+Crea dos conjuntos de datos diferentes para los dos tipos de baterías, por ejemplo datosA y datosB.
+```{r 1.2,echo=TRUE}
+datosA<-datos%>%filter(facility=="A")
+datosB<-datos%>%filter(facility=="B")
+```
+
+Realiza ahora un histograma de cada uno de los tipos y comenta si te parece que los datos siguen una distribucion normal
+```{r 1.3,echo=TRUE}
+hist(datosA$lifetime, col=4, main='histograma del ciclo de vida de las baterias del tipo A', ylab='Frecuencias', xlab='Tiempo de vida (H)')
+hist(datosB$lifetime, col=4, main='histograma del ciclo de vida de las baterias del tipo B', ylab='Frecuencias', xlab='Tiempo de vida (H)')
+```
+
+Confirma tus conclusiones con alguna/s de las herramientas vistas en clase (test de normalidad, gráfico Quantil-Quantil)
+```{r 1.4,echo=TRUE}
+
+```
+
+## Actividad 2
+Ahora que sabemos que nuestros datos siguen aproximadamente una distribución normal, tendríamos que estimar sus parámetros μ y σ. A partir de ahí, podemos realizar cálculo de probabilidades de la normal.
+
+Realiza una estimación de la media y la desviación típica de la población de cada tipo de baterías.
+```{r 2.1,echo=TRUE}
+mediaDatosA<-mean(datosA$lifetime)
+mediaDatosB<-mean(datosB$lifetime)
+desviacionDatosA<-sd(datosA$lifetime)
+desviacionDatosB<-sd(datosB$lifetime)
+```
+
+Calcula la probabilidad de que una batería tomada al azar del tipo A dure más de 210 horas
+```{r 2.2,echo=TRUE}
+(count(datosA%>%filter(lifetime>210))/count(datosA))$n
+
+```
+
+Calcula la probabilidad de que una batería tomada al azar del tipo B dure menos de 175 horas
+```{r 2.3,echo=TRUE}
+p=(count(datosB%>%filter(lifetime<175))/count(datosB))$n
+```
+
+Encuentra cuál es la duración máxima del 3% de las pilas del tipo B que duran menos (ayuda: esto es equivalente a encontrar el cuantil 0.03)
+```{r 2.4,echo=TRUE}
+
+```
+
+## Actividad 3
+Vamos a centrarnos ahora en las baterías de tipo B. Supongamos que una duración por debajo de 175 horas no es aceptable para el usuario de la batería. En la actividad anterior hemos calculado la probabilidad p de que esto suceda. Entonces, si tomamos una batería del tipo B al azar y comprobamos si dura menos de 175 horas, estamos realizando un experimento de Bernoulli con probabilidad p.
+
+Calcula la probabilidad de que en un lote de 10 baterías, no haya ninguna defectuosa (ayuda: distribución binomial).
+```{r 3.1,echo=TRUE}
+n=10
+x=0
+1-dbinom(x,n,p)
+```
+Imagina que las baterías se fabrican en serie e independientemente. ¿Cuál es la probabilidad de que la batería producida en quinto lugar sea la primera defectuosa? (ayuda: distribución geométrica. Ojo: en R, la variable X representa el número de fracasos hasta el primer éxito)
+```{r 3.2,echo=TRUE}
+
+```
+Supongamos que en una caja de 20 baterías van 3 defectuosas. ¿Cuál es la probabilidad de que al tomar una muestra sin reposición de 5 baterías al menos una sea defectuosa? (ayuda: distribución hipergeométrica)
+```{r 3.3,echo=TRUE}
+n=20
+
+```
+## Actividad 4 
+Seguimos con las baterías de tipo B, pero en vez de hacer experimentos de bernoulli queremos estudiar el número de baterías defectuosas fabricadas cada día. Supongamos que se fabrican 1000 baterías cada día. Entonces, cada día en promedio se estarán produciendo aproximadamente 1000 × p baterías, y el número de baterías defectuosas por día sigue una distribución de Poisson. Tomemos 12 como ese promedio de baterías defectuosas cada día.
+
+¿Cuál es la probabilidad de que un día se produzcan más de 20 baterías defectuosas?
+
+¿Cuál es la probabilidad de que un día no salga ninguna batería defectuosa de la fábrica?
+
+La fábrica funciona de lunes a viernes. ¿Qué distribución sigue el número de baterías defectuosas por
+## Actividad 5
+El departamento de I+D de la empresa que fabrica las baterías tipo B está investigando nuevos materiales y métodos para mejorar la vida útil de las baterías. En particular, quieren llegar a diseñar una batería cuya duración siga una distribución de Weibull con parámetros a = 100 y b = 185.
+
+Realiza una simulación de la producción semanal de baterías (recuerda: 5 días de produccción, a 1000 baterías por día). Guarda los datos en un vector.
+
+Con este nuevo proceso, ¿se mejora realmente la duración media de las baterías? (ayuda: puedes usar los datos simulados o la expresión de la esperanza de una Weibull)
+
+Los ingenieros no lo tienen muy claro (parece que la diferencia no es tanta en promedio y los nuevos materiales son costosos). Para demostrarles que merece la pena, calcula la proporción de baterías defectuosas que producirá el nuevo proceso y compárala con el anterior (la p que calculamos en la actividad 2)
